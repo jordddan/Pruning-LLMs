@@ -1,0 +1,6 @@
+{
+    "hidden_size_remain":2048,
+    "num_attention_heads_remain":16,
+    "ffn_hidden_size_remain":6912,
+    "drop_layers":[5,12,19,26]
+}
