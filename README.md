@@ -86,7 +86,7 @@ pip install nltk
 
 ![avatar](assets/prune.png)
 
-本方法会自动生成与配置大小相匹配的随机掩码向量 $z$。例如，如果要将`hidden_size`从2048裁剪至1024，则 $z^{hidden}$ 的形状为 [2048,1]。$sum(z^{hidden})=1024$。所有涉及到与`hidden_size`进行计算的矩阵都需要按照 $z^{hidden}$ 进行裁剪。这会使得 $z^{hidden}$ 值为1的元素下标对应的神经元的计算方式几乎不发生改变。
+本方法会自动生成与配置大小相匹配的随机掩码向量 $z$。例如，如果要将 `hidden_size` 从2048裁剪至1024，则 $z^{hidden}$ 的形状为 [2048,1]。$sum(z^{hidden})=1024$。所有涉及到与 `hidden_size`进行计算的矩阵都需要按照 $z^{hidden}$ 进行裁剪,这会使得 $z^{hidden}$ 值为1的元素下标对应的神经元的计算方式几乎不发生改变。
 
 具体的，以HuggingFace中LLaMA模型每一层SwiGLUMLP的裁剪为例：
 ```python
