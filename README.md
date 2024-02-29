@@ -1,5 +1,6 @@
 <!-- omit in toc -->
-# ✂️Pruning LLMs 
+<!-- # ✂️Pruning LLMs (Pruning LLMs to Any Config) -->
+<p align="center"><h1 align="center">✂️Pruning LLMs (Pruning LLMs to Any Config)</h1></p>
 
 <p align="center">
     <a href="https://github.com/jordddan/Pruning-LLMs/blob/main/LICENSE"><img alt="GitHub license" src="https://img.shields.io/badge/Code%20License-Apache_2.0-brightgreen.svg"></a>
