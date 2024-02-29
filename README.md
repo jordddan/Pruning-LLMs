@@ -1,8 +1,20 @@
 <!-- omit in toc -->
-# LLama-Pruner (裁剪llama模型到任意指定配置结构)
+# ✂️Pruning LLMs 
+
+<p align="center">
+    <a href="https://github.com/jordddan/Pruning-LLMs/blob/main/LICENSE"><img alt="GitHub license" src="https://img.shields.io/badge/Code%20License-Apache_2.0-brightgreen.svg"></a>
+    <a href="https://huggingface.co/jorjordan"><img alt="Pruned Models" src="https://img.shields.io/badge/%F0%9F%A4%97%20HuggingFace-Pruned%20Models-green"></a>
+    <a href="https://opennlg.cn/"><img src="https://img.shields.io/badge/Organization-OpenNLG%20Group-blueviolet"></a>
+</p>
+
 [[中文版](README.md)] [[English](README_EN.md)]
 
-着大模型的不断发展，以及算力的不断突破，模型的性能不断提升，但同时也伴随着参数量的不断提升。大参数量的模型虽然有较强的能力，但部署开销大，面对特定下游任务时，也几乎无法微调。因此，很多组织往往发布多个不同大小的模型供使用，例如3B，7B，13B，70B等等。而每个模型重新训练都需要2T或更多的token数量。因此，如果能够在不破坏模型能力的前提下将一个训练好的模型裁剪成不同大小进行复用，则能很大程度上节省成本。
+随着大模型的不断发展以及算力的不断突破，模型的性能不断提升，但同时也伴随着参数量的不断增大。大参数量的模型虽然有较强的能力，但部署开销大，面对特定下游任务时，也几乎无法微调。因此，很多组织往往发布多个不同大小的模型供使用，例如3B，7B，13B，70B等等。而每个模型重新训练都需要2T或更多的token数量。因此，如果能够在不破坏模型能力的前提下将一个训练好的模型裁剪成不同大小进行复用，则能很大程度上节省成本。
+
+<p align="center">
+<img src="assets/main.png", width="80%">
+</p>
+
 
 该项目提供一套完整的代码以及可用工具来给Transformer结构下的预训练模型进行结构化剪枝。剪枝后的模型能够在少量数据（10B-20B tokens）的训练下即恢复原有模型大部分的语言能力，并在下游任务上进行微调。该方法有如下特点：
 - **用户可以自定义裁剪结构：** 例如，可以将`hidden_size`从4096裁剪至3072，可以将`num_attention_heads`从32裁剪至24，将模型层数从32裁剪至28等等。用户可以通过裁剪获取任意指定结构，任意大小的transformer模型。
@@ -22,7 +34,9 @@
 
 以下是同样配置的模型，由裁剪权重初始化和随机初始化模型的训练效果对比：
 
-![avatar](assets/loss2.png)
+<p align="center">
+<img src="assets/loss2.png", width="80%">
+</p>
 
 # 内容
 以下是本项目的内容目录，涉及到模型裁剪，词表裁剪，Megatron框架高效训练LlaMA模型。
@@ -41,6 +55,14 @@
   - [微调表现](#微调表现)
 - [相关工作](#相关工作)
 - [引用](#引用)
+
+# 开源
+
+我们开源了由LLaMA2-13B模型裁剪的7B模型以及有LLaMA2-7B模型裁剪的3B模型：
+- prune-llama-7B: [link](https://huggingface.co/jorjordan/pruned-llama-7B)
+- prune-llama-3B: [link](https://huggingface.co/jorjordan/pruned-llama-3B)
+- pruned-llama3B-ner: TODO
+- openba-llama3B-ner:TODO
 
 # 安装指南
 
@@ -83,8 +105,10 @@ pip install nltk
 该方法将原始模型通过结构化权重裁剪，裁剪成任意大小的模型。例如，对于一个 [n,m] 的矩阵，如果将其裁剪成 [n-a,m-b] 大小的矩阵，将随机裁剪掉 a 行和 b 列的参数。
 但实际上, Transformer结构中的权重矩阵有严格的依赖关系。例如，在计算过程中，对于初始向量 x, 会经过多层的网络。例如 $x_1 = x_0AB$ 其中A和B的矩阵相乘存在行列的依赖关系。对于大小为```hidden_size``` 的向量 $x_0$，如果裁剪掉第 i 个位置, 那么 向量A以及向量B分别需要裁剪掉第 i 行以及第 i 列， 这能使得裁剪后矩阵的计算结果在除了 i 位置以外的其他位置保持一致。这份代码会生成随机的裁剪位置，并按照transformer的计算方式进行位置对应的结构化裁剪。
 具体的裁剪过程如下图：
-
-![avatar](assets/prune.png)
+<p align="center">
+<img src="assets/prune.png", width="80%">
+</p>
+<!-- ![avatar](assets/prune.png) -->
 
 本方法会自动生成与配置大小相匹配的随机掩码向量 $z$。例如，如果要将 `hidden_size` 从2048裁剪至1024，则 $z^{hidden}$ 的形状为 [2048,1], $sum(z^{hidden})=1024$。所有涉及到与 `hidden_size`进行计算的矩阵都需要按照 $z^{hidden}$ 进行裁剪,这会使得 $z^{hidden}$ 值为1的元素下标对应的神经元的计算方式几乎不发生改变。
 
@@ -170,8 +194,10 @@ python prune_llama.py \
 
 # 词表裁剪
 大模型的词表大小很大，并且由于hidden_size也较大，通常为2048或4096，整个embedding权重的大小为vocab_size * hidden_size。以多语言模型Multi-Lingual T5为例，词表大小约260000。总参数量约为1.1B。但如果仅用于中英文任务，有大量词表不会被使用到，造成很大的空间浪费。本项目提供了一套裁剪SentencePiece分词器的方法，并同时裁剪模型的embedding权重。通过词频排序的方法，选择在后续使用过程中模型几乎不会碰到的token并将其剔除，并裁剪对应的embedding权重。方法示意图如下：
+<p align="center">
+<img src="assets/prune_emb.png", width=80%>
+</p>
 
-![avatar](assets/prune_emb.png)
 
 我们对llama2-7B模型在MMLU上进行了测试，我们选取在MMLU数据集上出现频率最高的15000个token，将原本llama的词表从32000裁剪至15000。裁剪后模型表现由42.33变为42.21
 
@@ -220,19 +246,19 @@ bash prune_spm_and_emb.py
 
 所有的测评结果均使用lm-evaluation-harness代码仓库获得。
 
-| Models | #tokens for training | SciQ | PIQA | WinoGande |ARC-E | ARC-C(25) | HellaSwag(10) |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | 
-| LLaMA2-7B | 2T | 93.7 | 78.1 | 69.3 | 76.4 | 53.0 | 78.6 |
-| OPT2.7B | 300B | 85.8 | 73.7 | 60.8 | 60.8 | 34.0 | 61.5 |
-| Pythia2.8B | 300B | 88.3 | 74.0 | 59.7 | 64.4 | 36.4 | 60.8 |
-| INCITE-Base-3B | 800B | 90.7 | 74.6 | 63.5 | 67.7 | 40.2 | 64.8 |
-| Open-LLaMA-3B-v1 | 1T | 91.3 | 73.7 | 61.5 | 67.6 | 39.6 | 62.6 |
-| Open-LLaMA-3B-v2 | 1T | 91.8 | 76.2 | 63.5 | 66.5 | 39.0 | 67.6 |
-| Qwen-1.8B | 2T | 92.2 | 73.5 | 59.1 | 63.6 | 38.4 | 60.8 |
-| Pruned-7B | 20B | 91.8 | 76.2 | 65.2 | 68.6 | 45.7 | 70.4 |
-| Pruned-3.4B | 12B | 88.8 | 72.2 | 60.7 | 61.1 | 36.6 | 60.8 |
+| Models | #tokens for training | SciQ | PIQA | WinoGande |ARC-E | ARC-C(25) | HellaSwag(10) | LogiQA | BoolQ(32)  | MMLU (5) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---:   | :---: | 
+| LLaMA2-7B | 2T | 93.7 | 78.1 | 69.3 | 76.4 | 53.0 | 78.6 | 30.7 | 82.1   | 46.6 |
+| OPT2.7B | 300B | 85.8 | 73.7 | 60.8 | 60.8 | 34.0 | 61.5 | 26.0 | 63.4   | 25.9 |
+| Pythia2.8B | 300B | 88.3 | 74.0 | 59.7 | 64.4 | 36.4 | 60.8 | 28.0 | 66.0   | 26.9 |
+| INCITE-Base-3B | 800B | 90.7 | 74.6 | 63.5 | 67.7 | 40.2 | 64.8 | 27.7 | 65.9   | 27.0 |
+| Open-LLaMA-3B-v1 | 1T | 91.3 | 73.7 | 61.5 | 67.6 | 39.6 | 62.6 | 28.4 | 70.0   | 27.0 | 
+| Open-LLaMA-3B-v2 | 1T | 91.8 | 76.2 | 63.5 | 66.5 | 39.0 | 67.6 | 28.1 | 69.6   | 26.9 |
+| Qwen-1.8B | 2T | 92.2 | 73.5 | 59.1 | 63.6 | 38.4 | 60.8 | 31.6 | 66.7  | 44.8 | 
+| Pruned-7B | 20B | 91.8 | 76.2 | 65.2 | 68.6 | 45.7 | 70.4 | 27.4 | 74.1  | 31.6 |
+| Pruned-3.4B | 12B | 88.8 | 72.2 | 60.7 | 61.1 | 36.6 | 60.8 | 29.2 | 67.1   | 27.6 |
 
-| Models | #tokens for training | LogiQA | BoolQ(32) | LAMBADA  | MMLU (5) |
+<!-- | Models | #tokens for training | LogiQA | BoolQ(32) | LAMBADA  | MMLU (5) |
 | :--- | :---: | :---: | :---: | :---:  | :---: | 
 | LLaMA2-7B | 2T | 30.7 | 82.1 | 28.8  | 46.6 |
 | OPT2.7B | 300B | 26.0 | 63.4 | 63.6  | 25.9 |
@@ -242,11 +268,11 @@ bash prune_spm_and_emb.py
 | Open-LLaMA-3B-v2 | 1T | 28.1 | 69.6 | 66.5  | 26.9 |
 | Qwen-1.8B| 2T | 31.6 | 66.7 | 57.0 | 44.8 | 
 | Pruned-7B | 20B | 27.4 | 74.1 | 68.7 | 31.6 |
-| Pruned-3.4B | 12B | 29.2 |67.1 | 61.9  | 27.6 |
+| Pruned-3.4B | 12B | 29.2 |67.1 | 61.9  | 27.6 | -->
 
  <!-- omit in toc -->
 ## 训练过程表现
-TODO
+
 ## 微调表现
 TODO
 
