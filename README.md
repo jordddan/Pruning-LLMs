@@ -245,7 +245,7 @@ bash prune_spm_and_emb.py
 <!-- omit in toc -->
 ## 下游任务表现
 
-所有的测评结果均使用lm-evaluation-harness代码仓库获得。
+为了保证比较的公平性，所有的测评结果均使用[lm-evaluation-harness](https://github.com/EleutherAI/lm-evaluation-harness)代码仓库获得。
 
 | Models | #tokens for training | SciQ | PIQA | WinoGande |ARC-E | ARC-C(25) | HellaSwag(10) | LogiQA | BoolQ(32)  | MMLU (5) | AVG |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---:   | :---: | :---: | 
@@ -270,4 +270,4 @@ TODO
 - [Megatron-LM](https://github.com/NVIDIA/Megatron-LM): LlaMA的训练基于Megatron框架开发。
 - [OpenBA](https://github.com/OpenNLG/OpenBA): 开源的15B大小的Encoder-Decoder中英文模型。
 - [OpenBA-v2](https://github.com/OpenNLG/OpenBA): 本项目为OpenBA-v2的前期实验。OpenBA-v2即利用该项目的模型裁剪框架将15B的OpenBA模型裁剪至3.5B，利用多阶段的裁剪恢复，裁剪掉近80%的模型参数。仅使用100B的恢复数据，超过大部分主流在开源数据上训练的模型。我们即将开源模型训练代码以及模型参数。
-
+- [Megatron-CookBook](https://github.com/dwzq-com-cn/LLM-Megatron-Cookbook): 基于Megatron的高效超大模型训练仓库，包含模型预训练，微调，压缩，长度扩展，大模型多教师蒸馏。
