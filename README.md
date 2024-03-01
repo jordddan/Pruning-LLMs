@@ -271,7 +271,3 @@ TODO
 - [OpenBA](https://github.com/OpenNLG/OpenBA): 开源的15B大小的Encoder-Decoder中英文模型。
 - [OpenBA-v2](https://github.com/OpenNLG/OpenBA): 本项目为OpenBA-v2的前期实验。OpenBA-v2即利用该项目的模型裁剪框架将15B的OpenBA模型裁剪至3.5B，利用多阶段的裁剪恢复，裁剪掉近80%的模型参数。仅使用100B的恢复数据，超过大部分主流在开源数据上训练的模型。我们即将开源模型训练代码以及模型参数。
 
-
-# 求职
-
-本人目前研二，2025年7月毕业，目前寻找NLP，大模型方向校招实习或研究型实习。有意向可联系邮箱danqiao.jordan@gmail.com。
