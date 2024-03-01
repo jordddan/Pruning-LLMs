@@ -265,6 +265,10 @@ bash prune_spm_and_emb.py
 TODO
 
 # 相关工作
-TODO
+- [Cofi-Pruner](https://github.com/princeton-nlp/CoFiPruning): 通过训练裁剪mask，对Bert模型进行裁剪。
+- [Sheard-LLaMA](https://github.com/princeton-nlp/LLM-Shearing): 类似Cofi-Pruner，通过训练裁剪mask对LlaMA模型进行裁剪，并提出了新的数据恢复策略。本项目与这两个项目的不同之处在于， 本项目的mask由随机生成，不需要任何训练。并且经实验发现，即使利用随机生成的mask，以及开源的粗粒度数据，大语言模型也能恢复。此外，本项目提供Megatron框架下张量并行模型的裁剪，即若一个模型无法放在单张GPU上，也能对模型进行裁剪并训练。
+- [Megatron-LM](https://github.com/NVIDIA/Megatron-LM): LlaMA的训练基于Megatron框架开发。
+- [OpenBA](https://github.com/OpenNLG/OpenBA): 开源的15B大小的Encoder-Decoder中英文模型。
+- [OpenBA-v2](https://github.com/OpenNLG/OpenBA): 本项目为OpenBA-v2的前期实验。OpenBA-v2即利用该项目的模型裁剪框架将15B的OpenBA模型裁剪至3.5B，利用多阶段的裁剪恢复，裁剪掉近80%的模型参数。仅使用100B的恢复数据，超过大部分主流在开源数据上训练的模型。我们即将开源模型训练代码以及模型参数。
 
 
